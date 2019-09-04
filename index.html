@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <title>ひらがななぞり</title>
+
+    <style type="text/css">
+      body{overflow:hidden;}
+      .nazorin {width:320px; height:320px;margin:0 auto; border:1px solid #ccc;}
+      .nazorin canvas {width:320px;height:320px;}
+      .btnbox{position:relative;width:320px;margin:0 auto;}
+      button{position:absolute;right:0;top:10px;border:none;background:none;}
+      #clear{left:0;}
+      button i{font-size:40px;color:#666;}
+    </style>
+  </head>
+  <body>
+
+  <h1 class="bg-dark text-center py-2 text-white h3">ひらがななぞり</h1>
+
+  <div class="p-3">
+
+    <div class="mb-3">
+
+
+      <div class="nazorin"><canvas id="mynazorin"></canvas></div>
+      <div class="btnbox">
+        <!--<button id="clear"><i class="fas fa-eraser"></i></button>-->
+        <button id="reload"><i class="fas fa-redo-alt"></i></button>
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  
+  
+  <script type="text/javascript">
+  window.addEventListener("load", function () {
+
+  var canvas = document.getElementById("mynazorin");
+  var nazorin = canvas.getContext("2d");
+  var w = 320;
+  var h = 320;
+  var drawing = false;
+  var oldPos;
+  var moji = ['あ','い','う','え','お','か','き','く','け','こ','さ','し','す','せ','そ','た','ち','つ','て','と','な','に','ぬ','ね','の','は','ひ','ふ','へ','ほ','ま','み','む','め','も','や','ゆ','よ','ら','り','る','れ','ろ','わ','を','ん'];
+  var getmoji = choose_at_random(moji);
+  function choose_at_random(arrayData) {
+    var arrayIndex = Math.floor(Math.random() * arrayData.length);
+    return arrayData[arrayIndex];
+  }
+
+
+  // default
+  canvas.width = w;
+  canvas.height = h;
+  nazorin.fillStyle = "#ccc";
+  nazorin.font = "320px 'ＭＳ ゴシック'";
+  nazorin.textAlign = "center";
+  nazorin.textBaseline = "top";
+  nazorin.fillText(getmoji, 155, 0, 320);
+  nazorin.strokeStyle = "#000000";
+  nazorin.lineWidth = 14;
+  nazorin.lineJoin = "round";
+  nazorin.lineCap = "round";
+
+  // draw start
+  canvas.addEventListener("touchstart", function (event) {
+    drawing = true;
+    oldPos = getPosT(event);
+  }, false);
+
+  // draw end
+  canvas.addEventListener("touchend", function () {
+    drawing = false;
+  }, false);
+
+  canvas.addEventListener("gestureend", function () {
+    console.log("mouseout");
+    drawing = false;
+  }, false);
+
+  canvas.addEventListener("touchmove", function (event) {
+    var pos = getPosT(event);
+    if (drawing) {
+      nazorin.beginPath();
+      nazorin.moveTo(oldPos.x, oldPos.y);
+      nazorin.lineTo(pos.x, pos.y);
+      nazorin.stroke();
+      nazorin.closePath();
+      oldPos = pos;
+    }
+  }, false);
+
+  function scrollX(){return document.documentElement.scrollLeft || document.body.scrollLeft;}
+  function scrollY(){return document.documentElement.scrollTop || document.body.scrollTop;}
+  function getPosT (event) {
+    var mouseX = event.touches[0].clientX - $(canvas).position().left + scrollX();
+    var mouseY = event.touches[0].clientY - $(canvas).position().top + scrollY();
+    return {x:mouseX, y:mouseY};
+  }
+
+  function stopDefault(event) {
+    if (event.touches[0].target.tagName.toLowerCase() == "#clear") {return;}
+    if (event.touches[0].target.tagName.toLowerCase() == "#reload") {return;}
+    event.preventDefault();
+  }
+
+  document.addEventListener("touchstart", stopDefault, false);
+  document.addEventListener("touchmove", stopDefault, false);
+  document.addEventListener("touchend", stopDefault, false); 
+  document.addEventListener("gesturestart", stopDefault, false);
+  document.addEventListener("gesturechange", stopDefault, false);
+  document.addEventListener("gestureend", stopDefault, false); 
+                                    
+  
+  // button
+  $("#clear").click(function () {
+    nazorin.clearRect(0, 0, $(canvas).width(), $(canvas).height());
+  });
+
+  $("#reload").click(function () {
+    location.reload();
+  });
+
+}, false);
+
+
+</script>
+
+
+  </body>
+</html>
